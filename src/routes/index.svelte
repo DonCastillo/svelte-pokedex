@@ -1,15 +1,35 @@
+<script context="module" lang="ts">
+	export async function load({ params }) {
+		const url = `https://pokeapi.co/api/v2/pokemon?limit=150`;
+		const res = await fetch(url);
+		const data = await res.json();
+		const loadedPokemon = data.results.map((data, index) => {
+			return {
+				name: data.name,
+				id: index + 1,
+				image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+					index + 1
+				}.png`
+			};
+		});
+		return { props: { pokemon: loadedPokemon } };
+	}
+</script>
+
 <script lang="ts">
-	import { pokemon } from './../store/pokestore';
 	import PokemanCard from './../components/pokemanCard.svelte';
+	export let pokemon;
 
 	let searchTerm: string = '';
 	let filteredPokemon: any[] = [];
 
 	$: {
-		if(searchTerm) {
-			filteredPokemon = $pokemon.filter(pokeman => pokeman.name.includes(searchTerm))
+		if (searchTerm) {
+			filteredPokemon = pokemon.filter((pokeman) =>
+				pokeman.name.toLowerCase().includes(searchTerm.toLowerCase())
+			);
 		} else {
-			filteredPokemon = [...$pokemon]
+			filteredPokemon = [...pokemon];
 		}
 	}
 </script>
